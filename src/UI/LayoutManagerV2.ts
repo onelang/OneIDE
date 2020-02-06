@@ -1,4 +1,4 @@
-﻿﻿import * as GoldenLayout from "goldenlayout";
+﻿﻿import * as GoldenLayout from "golden-layout";
 
 export class LayoutItem {
     constructor(public parent: Container, public contentItem: GoldenLayout.ContentItem) { }
@@ -7,8 +7,8 @@ export class LayoutItem {
 }
 
 export class Component extends LayoutItem {
-    get component() { return <GoldenLayout.Component>(this.contentItem.isComponent ? this.contentItem : this.contentItem.contentItems[0]); }
-    get container() { return this.component.container; }
+    get component() { return this.contentItem.isComponent ? this.contentItem : this.contentItem.contentItems[0]; }
+    get container() { return (<any>this.component).container; }
     get element(): HTMLElement { return this.container.getElement().get(0); }
 
     get title() { return this.component.config.title; }
@@ -78,7 +78,7 @@ export class Container extends LayoutItem {
 
     addChild<T extends LayoutItem>(creator: { new (parent: Container, c: GoldenLayout.ContentItem): T }, props: any, cb?: (c: T) => void) {
         this.contentItem.addChild(Object.assign({ isClosable: false, children: [] }, props));
-        var newItem = new creator(this, this.contentItem.contentItems.last());
+        var newItem = new creator(this, this.contentItem.contentItems[this.contentItem.contentItems.length - 1]);
         newItem.init();
         this.children.push(newItem);
         if (cb)
@@ -95,8 +95,8 @@ export class Container extends LayoutItem {
     addTabs(cb?: (c: Container) => void) { return this.addContainer("stack", cb); }
 
     remove(item: LayoutItem) {
-        this.children.remove(item);
-        this.contentItem.removeChild(item.contentItem);
+        (<any>this.children).remove(item);
+        this.contentItem.removeChild(<any>item.contentItem);
     }
 
     addComponent(title: string, props?: IComponentProps): Component;

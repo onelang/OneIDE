@@ -1,11 +1,6 @@
 import { Layout, LangUi, EditorChangeHandler } from "./UI/AppLayout";
-import { CodeGenerator } from "./Generator/CodeGenerator";
-import { langConfigs, LangConfig, CompileResult, LangConfigs } from "./Generator/LangConfigs";
 import { ExposedPromise } from "./Utils/ExposedPromise";
-import { LangFileSchema } from "./Generator/LangFileSchema";
-import { OneCompiler } from "./OneCompiler";
-import { OverviewGenerator } from "./One/OverviewGenerator";
-import { AstHelper } from "./One/AstHelper";
+import { OneCompiler, OverviewGenerator, AstHelper, LangConfigs } from "onelang";
 
 declare var YAML: any;
 
@@ -42,11 +37,11 @@ async function apiCall<TResponse>(endpoint: string, request: object = null): Pro
     return <TResponse> responseObj;
 }
 
-async function runLang(langConfig: LangConfig, code: string) {
+async function runLang(langConfig: LangConfigs.LangConfig, code: string) {
     langConfig.request.code = code;
     langConfig.request.packageSources = [{ packageName: 'one', fileName: 'one', code: layout.langs[langConfig.name].stdLibHandler.getContent() }];
     
-    const responseJson = await apiCall<CompileResult>("compile", langConfig.request);
+    const responseJson = await apiCall<LangConfigs.CompileResult>("compile", langConfig.request);
     console.log(langConfig.name, responseJson);
     if (responseJson.exceptionText)
         console.log(langConfig.name, "Exception", responseJson.exceptionText);
@@ -79,7 +74,7 @@ class CompileHelper {
     astOverview: string;
     astJsonOverview: string;
 
-    constructor(public langConfigs: LangConfigs) { }
+    constructor(public langConfigs: LangConfigs.LangConfigs) { }
 
     async setContent(handler: EditorChangeHandler, url: string) {
         const content = await downloadTextFile(url);
@@ -126,7 +121,7 @@ class CompileHelper {
     }
 }
 
-const compileHelper = new CompileHelper(langConfigs);
+const compileHelper = new CompileHelper(LangConfigs.langConfigs);
 
 function statusBarError(langUi: LangUi, error: string) {
     langUi.statusBar.attr("title", error);
@@ -137,7 +132,7 @@ async function runLangUi(langName: string, codeCallback: () => string) {
     const langUi = layout.langs[langName];
     langUi.statusBar.text("loading...");
     try {
-        const langConfig = langConfigs[langName];
+        const langConfig = LangConfigs.langConfigs[langName];
 
         const code = codeCallback();
         if (!serverhost) {
@@ -282,7 +277,7 @@ async function backendInit() {
     if (statusResponse.errorCode === "invalid_token") {
         return new Promise<string>((resolve, reject) => {
             $("#authTokenModal").modal().on('hide.bs.modal', () => {
-                resolve($("#authToken").val().trim());
+                resolve((<string>$("#authToken").val()).trim());
             });
         });
     } else {
@@ -295,7 +290,7 @@ async function main() {
     
     $("#welcomeDoNotShowAgain").click(() => localStorage.setItem("doNotShowWelcome", "true"));
     if (localStorage.getItem("doNotShowWelcome") !== "true")
-        $("#welcomeModal").modal();        
+        $("#welcomeModal").modal();
 
     authTokenPromise = backendInit();
     await compileHelper.init();

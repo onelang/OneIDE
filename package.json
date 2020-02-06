@@ -1,0 +1,47 @@
+{
+  "name": "onelang-ide",
+  "version": "0.0.1",
+  "description": "Web-based IDE for OneLang transpiler (onelang.io)",
+  "main": "serve.js",
+  "license": "MIT",
+  "author": {
+    "name": "Koczka Tamás",
+    "email": "koczkatamas@gmail.com",
+    "url": "https://kt.gy/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onelang/OneIDE.git"
+  },
+  "keywords": [
+    "onelang",
+    "ide",
+    "transpiler",
+    "source-to-source",
+    "programming-language"
+  ],
+  "bugs": {
+    "url": "https://github.com/onelang/OneLang/issues"
+  },
+  "homepage": "https://onelang.io",
+  "files": [
+    "images",
+    "js",
+    "lib",
+    "index.html"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "golden-layout": "^1.5.9",
+    "onelang": "0.0.4"
+  },
+  "devDependencies": {
+    "@types/ace": "0.0.42",
+    "@types/bootstrap": "^4.3.1",
+    "@types/jquery": "^3.3.32",
+    "@types/node": "^13.7.0",
+    "typescript": "^3.7.5"
+  }
+}

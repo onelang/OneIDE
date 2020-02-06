@@ -1,5 +1,4 @@
 import { LayoutManager, Container, Component, ClosableComponent } from "./LayoutManagerV2";
-import * as ace from "ace/ace";
 
 export interface LangUi {
     editorComponent: Component,
