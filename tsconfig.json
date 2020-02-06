@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "umd",
+        "sourceMap": true,
+        "outDir": "js",
+        "moduleResolution": "node"
+    },
+    "include": ["src/**/*"],
+}
