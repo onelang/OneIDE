@@ -128,7 +128,7 @@ export class Layout {
             ts: { title: "TypeScript", langName: "typescript" },
             cpp: { title: "C++", aceLang: "c_cpp" },
             cs: { title: "C#", langName: "csharp" },
-            go: { title: "Go", acelang: "swift" },
+            go: { title: "Go", aceLang: "golang" },
             java: { title: "Java" },
             perl: { title: "Perl" },
             php: { title: "PHP" },

@@ -1,21 +1,18 @@
 <html>
 <head>
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css" />
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="node_modules/golden-layout/src/css/goldenlayout-base.css" />
+    <link type="text/css" rel="stylesheet" href="node_modules/golden-layout/src/css/goldenlayout-dark-theme.css" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="node_modules/bootswatch/dist/darkly/bootstrap.css" />
     
     <script>
         if (location.href.startsWith("http://ide.onelang.io/") && !location.href.includes("server=http://"))
             location.href = location.href.replace(/^http:/, "https:");
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bowser/1.9.2/bowser.js" integrity="sha256-DePezqaNKYUCtds+oWUkhArD5RhRCNYHFiXjjAcysME=" crossorigin="anonymous"></script>
-    <script src="js/Utils/Extensions.js"></script>
-    <script src="lib/yaml.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="node_modules/bowser/bundled.js"></script>
+    <script src="node_modules/yamljs/dist/yaml.min.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         ((window.gitter = {}).chat = {}).options = { room: "onelang-io/Lobby", activationElement: false };
@@ -133,9 +130,10 @@
     </div>
 </div>
     
+<script src="node_modules/requirejs/require.js"></script>
 <script>
     // unsupported browser
-    if (bowser.check({ chrome: "55", firefox: "52", safari: "10.1", opera: "50" }, true))
+    if (bowser.getParser(navigator.userAgent).satisfies({ chrome: ">=55", firefox: ">=52", safari: ">=10.1", opera: ">=50" }))
         document.getElementById("unsupportedBrowser").style.display = "none";
 
     document.querySelector("#unsupportedBrowser .closeBtn").addEventListener("click", 
@@ -143,14 +141,21 @@
     
     window.global = window;
     requirejs.config({
-        "baseUrl": "js/",
-        "paths": {
-            "goldenlayout": "//cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min",
-            "ace/ace": "//cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ace"
+        packages: [{
+            name: 'onelang',
+            location: '/node_modules/onelang/lib',
+            main: 'index'
+        }],
+        baseUrl: 'js/',
+        paths: {
+            "golden-layout": "/node_modules/golden-layout/dist/goldenlayout",
+            "jquery": "/node_modules/jquery/dist/jquery",
+            "js-yaml": "/node_modules/onelang/node_modules/js-yaml/dist/js-yaml",
+            "ace": "/node_modules/ace-builds/src"
         }
     });
 
-    require(["Browser"]);
+    require(["ace/ace", "Browser"]);
 </script>
 
 <div class="modal fade" id="authTokenModal" tabindex="-1" role="dialog" aria-labelledby="authTokenModalLabel">

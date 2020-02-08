@@ -1,8 +1,6 @@
 import { Layout, LangUi, EditorChangeHandler } from "./UI/AppLayout";
 import { ExposedPromise } from "./Utils/ExposedPromise";
-import { OneCompiler, OverviewGenerator, AstHelper, LangConfigs } from "onelang";
-
-declare var YAML: any;
+import { OneCompiler, OverviewGenerator, AstHelper, LangConfigs, PackageManager, PackageBundleSource } from "onelang";
 
 const qs = {};
 location.search.substr(1).split('&').map(x => x.split('=')).forEach(x => qs[x[0]] = x[1]);
@@ -71,6 +69,7 @@ function escapeHtml(unsafe) {
 
 class CompileHelper {
     compiler: OneCompiler;
+    pacMan: PackageManager;
     astOverview: string;
     astJsonOverview: string;
 
@@ -81,19 +80,24 @@ class CompileHelper {
         handler.setContent(content);
     }
 
-    async init() {
+    async init(oneLangDir: string = "./") {
         const tasks: Promise<void>[] = [];
 
-        for (const lang of layout.inputLangs)
-            tasks.push(this.setContent(layout.langs[lang].overlayHandler, `langs/NativeResolvers/${lang}.ts`));
+        const packageSource = new PackageBundleSource(JSON.parse(await downloadTextFile(`${oneLangDir}/packages/bundle.json`)));
 
-        tasks.push(this.setContent(layout.oneStdLibHandler, `langs/StdLibs/stdlib.d.ts`));
-        tasks.push(this.setContent(layout.genericTransformsHandler, `langs/NativeResolvers/GenericTransforms.yaml`));
+        this.pacMan = new PackageManager(packageSource);
+        await this.pacMan.loadAllCached();
+        layout.oneStdLibHandler.setContent(this.pacMan.getInterfaceDefinitions());
+
+        for (const lang of layout.inputLangs)
+            tasks.push(this.setContent(layout.langs[lang].overlayHandler, `${oneLangDir}/langs/NativeResolvers/${lang}.ts`));
+
+        tasks.push(this.setContent(layout.genericTransformsHandler, `${oneLangDir}/langs/NativeResolvers/GenericTransforms.yaml`));
 
         for (const lang of Object.values(this.langConfigs)) {
             if (!layout.langs[lang.name]) continue;
-            tasks.push(this.setContent(layout.langs[lang.name].generatorHandler, `langs/${lang.name}.yaml`));
-            tasks.push(this.setContent(layout.langs[lang.name].stdLibHandler, `langs/StdLibs/${lang.stdlibFn}`));
+            tasks.push(this.setContent(layout.langs[lang.name].generatorHandler, `${oneLangDir}/langs/${lang.name}.yaml`));
+            //tasks.push(this.setContent(layout.langs[lang.name].stdLibHandler, `${oneLangDir}/langs/StdLibs/${lang.stdlibFn}`));
         }
 
         await Promise.all(tasks);
@@ -113,10 +117,8 @@ class CompileHelper {
     }
 
     compile(langName: string) {
-        const lang = this.langConfigs[langName];
         const schemaYaml = layout.langs[langName].generatorHandler.getContent();
-        // TODO: pacMan is null
-        const code = this.compiler.compile(schemaYaml, null, true, layout.inputLangs.includes(langName));
+        const code = this.compiler.compile(schemaYaml, this.pacMan, true, layout.inputLangs.includes(langName));
         return code;
     }
 }
@@ -136,7 +138,7 @@ async function runLangUi(langName: string, codeCallback: () => string) {
 
         const code = codeCallback();
         if (!serverhost) {
-            html`<span class="label note">note</span><a class="compilerMissing" href="https://github.com/koczkatamas/onelang/wiki/Compiler-backend" target="_blank">Compiler backend is not configured</a>`(langUi.statusBar);
+            html`<span class="label note">note</span><a class="compilerMissing" href="https://github.com/onelang/onelang/wiki/Compiler-backend" target="_blank">Compiler backend is not configured</a>`(langUi.statusBar);
             return;
         }
 
@@ -268,7 +270,7 @@ function initLayout() {
 }
 
 async function setupTestProgram() {
-    const testPrg = await downloadTextFile(`input/${testPrgName}.ts`);
+    const testPrg = await downloadTextFile(`examples/${testPrgName}.ts`);
     layout.langs["typescript"].changeHandler.setContent(testPrg.replace(/\r\n/g, '\n'), true);
 }
 
@@ -293,7 +295,7 @@ async function main() {
         $("#welcomeModal").modal();
 
     authTokenPromise = backendInit();
-    await compileHelper.init();
+    await compileHelper.init("node_modules/onelang");
     await setupTestProgram();
 }
 

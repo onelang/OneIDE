@@ -34,8 +34,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "ace-builds": "^1.4.8",
+    "bootstrap": "^4.4.1",
+    "bootswatch": "^4.4.1",
+    "bowser": "^2.9.0",
     "golden-layout": "^1.5.9",
-    "onelang": "0.0.4"
+    "jquery": "^3.4.1",
+    "onelang": "0.0.4",
+    "requirejs": "^2.3.6"
   },
   "devDependencies": {
     "@types/ace": "0.0.42",
