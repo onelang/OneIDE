@@ -37,6 +37,7 @@ async function apiCall<TResponse>(endpoint: string, request: object = null): Pro
 
 async function runLang(langConfig: LangConfigs.LangConfig, code: string) {
     langConfig.request.code = code;
+    langConfig.request.stdlibCode = "";
     langConfig.request.packageSources = [{ packageName: 'one', fileName: 'one', code: layout.langs[langConfig.name].stdLibHandler.getContent() }];
     
     const responseJson = await apiCall<LangConfigs.CompileResult>("compile", langConfig.request);
