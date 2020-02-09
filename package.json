@@ -1,6 +1,6 @@
 {
   "name": "onelang-ide",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Web-based IDE for OneLang transpiler (onelang.io)",
   "main": "serve.js",
   "license": "MIT",
@@ -31,6 +31,10 @@
     "index.html"
   ],
   "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc",
+    "buildCompilerBackend": "cd CompilerBackend;./compile.sh",
+    "start": "node serve.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -39,6 +43,7 @@
     "bootswatch": "^4.4.1",
     "bowser": "^2.9.0",
     "golden-layout": "^1.5.9",
+    "http-server": "^0.12.1",
     "jquery": "^3.4.1",
     "onelang": "0.0.4",
     "requirejs": "^2.3.6"
