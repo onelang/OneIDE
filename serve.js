@@ -17,7 +17,7 @@ function runCompilerBackend() {
 if (!process.argv.includes("--withoutCompilerBackend"))
     runCompilerBackend();
 
-const server = new HttpServer({ cache: -1, showDotfiles: false, showDir: false });
+const server = new HttpServer({ cache: -1, showDotfiles: 'false', showDir: 'false' });
 server.listen(port, host, function () {
     console.log(`Server is listening on ${host}:${port}. Hit CTRL-C to stop the server.`);
     opener(`http://${host}:${port}/`);
