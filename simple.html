@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+        <script>
+            requirejs.config({
+                packages: [
+                    { name: 'onelang', location: 'https://unpkg.com/onelang@0.0.6/lib', main: 'index' }
+                ],
+                paths: {
+                    "js-yaml": "https://unpkg.com/js-yaml@3.13.1/dist/js-yaml",
+                }
+            });
+
+            function transpile() {
+                require(["onelang"], one => {
+                    (async function() {
+                        try {
+                            resultCode.value = await one.OneLang.transpile(sourceCode.value, sourceLang.value, targetLang.value);
+                        } catch (err) {
+                            resultCode.value = err;
+                        }
+                    })();
+                });
+            }
+        </script>
+        <style>
+            table, textarea { width:100%; height:100% }
+            td { width:50% }
+            textarea { font-family: "Courier New", Courier, monospace; font-size:15px }
+        </style>
+    </head>
+    <body>
+        <p><b>Note: </b>this is highly simplified example for development purposes. For a more pleasent user experience, please visit the <a href="https://ide.onelang.io">OneLang WebIDE</a>.</p>
+        <table>
+            <tr>
+                <td>
+                    <label for="sourceLang">Source language:</label>
+                    <select id="sourceLang">
+                        <option value="typescript">TypeScript</option>
+                        <option value="csharp">C#</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="php">PHP</option>
+                    </select>
+                    <input type="button" value="Transpile!" onclick="transpile()">
+                </td>
+                <td>
+                    <label for="targetLang">Target language:</label>
+                    <select id="targetLang">
+                        <option value="cpp">C++</option>
+                        <option value="csharp" selected>C#</option>
+                        <option value="go">Go</option>
+                        <option value="java">Java</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="perl">Perl</option>
+                        <option value="php">PHP</option>
+                        <option value="python">Python</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="swift">Swift</option>
+                        <option value="typescript">TypeScript</option>
+                    </select>
+                    <input type="button" value="Transpile!" onclick="transpile()">
+                </td>
+            </tr>
+            <tr style="height:100%;">
+                <td>
+                    <textarea id="sourceCode">console.log("hello world!");</textarea>
+                </td>
+                <td>
+                    <textarea id="resultCode"></textarea>
+                </td>
+            </tr>
+        </table>
+        <script>
+            transpile();
+        </script>
+    </body>
+</html>
